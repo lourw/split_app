@@ -3,13 +3,13 @@ defmodule SplitAppWeb.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
-      <.header class="text-center">
+    <div class="mx-auto flex flex-col max-w-sm gap-6 justify-center items-center">
+      <.header header_class="text-xl text-center">
         Log in to account
         <:subtitle>
           Don't have an account?
           <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
-            Sign up
+            Register
           </.link>
           for an account now.
         </:subtitle>
