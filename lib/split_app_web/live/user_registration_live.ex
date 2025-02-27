@@ -6,8 +6,8 @@ defmodule SplitAppWeb.UserRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
-      <.header class="text-center">
+    <div class="mx-auto flex flex-col max-w-sm gap-6 justify-center items-center">
+      <.header header_class="text-center text-xl">
         Register for an account
         <:subtitle>
           Already registered?
@@ -26,6 +26,7 @@ defmodule SplitAppWeb.UserRegistrationLive do
         phx-trigger-action={@trigger_submit}
         action={~p"/users/log_in?_action=registered"}
         method="post"
+        class="flex w-full"
       >
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.

@@ -1,10 +1,29 @@
-<header>
-  <div>
-    spl.it
-  </div>
-</header>
-<main>
-  <div>
+<main class="flex flex-col min-h-screen">
+  <nav class="flex w-full justify-between border-b border-gray-100 py-4 px-8">
+    <div class="flex justify-between">
+      <.link href={~p"/"} class="text-xl font-semibold text-gray-900">
+        spl.it
+      </.link>
+    </div>
+    <div class="flex gap-8 font-semibold">
+      <%= if @current_user do %>
+        <.link href={~p"/users/settings"}>
+          Settings
+        </.link>
+        <.link href={~p"/users/log_out"}>
+          Logout
+        </.link>
+      <% else %>
+        <.link href={~p"/users/register"}>
+          Register
+        </.link>
+        <.link href={~p"/users/log_in"}>
+          Log In
+        </.link>
+      <% end %>
+    </div>
+  </nav>
+  <div class="relative flex flex-grow">
     {@inner_content}
   </div>
 </main>

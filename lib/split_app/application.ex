@@ -11,8 +11,7 @@ defmodule SplitApp.Application do
       SplitAppWeb.Telemetry,
       SplitApp.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:split_app, :ecto_repos),
-        skip: skip_migrations?()},
+       repos: Application.fetch_env!(:split_app, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:split_app, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: SplitApp.PubSub},
       # Start the Finch HTTP client for sending emails

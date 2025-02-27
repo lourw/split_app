@@ -1,4 +1,4 @@
-defmodule SplitAppWeb.LandingComponents do 
+defmodule SplitAppWeb.LandingComponents do
   use Phoenix.Component
   import SplitAppWeb.CoreComponents
 
@@ -11,7 +11,7 @@ defmodule SplitAppWeb.LandingComponents do
     ~H"""
     <div class="text-left flex flex-col hover:opacity-75 flex-1 bg-slate-100 shadow-md border-slate-200 rounded-lg
     py-4 px-6 gap-3">
-      <.icon name={@icon}/>
+      <.icon name={@icon} />
       <h3 class="flex items-center gap-2 text-lg font-semibold">
         {@header}
       </h3>
