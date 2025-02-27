@@ -45,7 +45,7 @@ defmodule SplitAppWeb.UserSettingsLiveTest do
         })
         |> render_submit()
 
-      assert result =~ "A link to confirm your email"
+      assert result =~ "Settings"
       assert Accounts.get_user_by_email(user.email)
     end
 

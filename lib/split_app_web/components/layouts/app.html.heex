@@ -11,8 +11,11 @@
           Settings
         </.link>
         <.link href={~p"/users/log_out"} method="delete">
-          Logout
+          Log out
         </.link>
+        <div>
+          {@current_user.email}
+        </div>
       <% else %>
         <.link href={~p"/users/register"}>
           Register
