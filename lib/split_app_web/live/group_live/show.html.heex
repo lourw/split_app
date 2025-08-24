@@ -1,5 +1,5 @@
 <.header>
-  Group {@group.id}
+  {@group.name}
   <:subtitle>This is a group record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/groups/#{@group}/show/edit"} phx-click={JS.push_focus()}>
@@ -8,14 +8,14 @@
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Name">{@group.name}</:item>
-  <:item title="Description">{@group.description}</:item>
-</.list>
+<.back navigate={~p"/dashboard"}>Back to groups</.back>
 
-<.back navigate={~p"/groups"}>Back to groups</.back>
-
-<.modal :if={@live_action == :edit} id="group-modal" show on_cancel={JS.patch(~p"/groups/#{@group}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="group-modal"
+  show
+  on_cancel={JS.patch(~p"/groups/#{@group}")}
+>
   <.live_component
     module={SplitAppWeb.GroupLive.FormComponent}
     id={@group.id}

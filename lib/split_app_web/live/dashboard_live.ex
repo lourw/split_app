@@ -6,8 +6,8 @@ defmodule SplitAppWeb.DashboardLive do
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     groups = Groups.list_user_groups(user)
-    
-    {:ok, 
+
+    {:ok,
      socket
      |> assign(:groups, groups)
      |> assign(:page_title, "My Groups")}
@@ -16,15 +16,10 @@ defmodule SplitAppWeb.DashboardLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-6xl">
+    <div class="mx-auto max-w-6xl text-center">
       <.header>
         Welcome, <%= @current_user.email %>!
         <:subtitle>Here are all the groups you're a part of</:subtitle>
-        <:actions>
-          <.link navigate={~p"/groups/new"}>
-            <.button>Create New Group</.button>
-          </.link>
-        </:actions>
       </.header>
 
       <div class="mt-10">
@@ -78,14 +73,6 @@ defmodule SplitAppWeb.DashboardLive do
             <% end %>
           </div>
         <% end %>
-      </div>
-
-      <div class="mt-10 flex items-center justify-between border-t border-gray-200 pt-10">
-        <div class="flex items-center space-x-3">
-          <.link navigate={~p"/groups"} class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            Browse All Groups
-          </.link>
-        </div>
       </div>
     </div>
     """
