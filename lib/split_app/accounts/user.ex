@@ -9,6 +9,10 @@ defmodule SplitApp.Accounts.User do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
+    many_to_many :groups, SplitApp.Groups.Group,
+      join_through: SplitApp.Groups.UserGroup,
+      on_replace: :delete
+
     timestamps(type: :utc_datetime)
   end
 
