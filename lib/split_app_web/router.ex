@@ -67,6 +67,14 @@ defmodule SplitAppWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{SplitAppWeb.UserAuth, :ensure_authenticated}] do
+      live "/dashboard", DashboardLive, :index
+
+      live "/groups", GroupLive.Index, :index
+      live "/groups/new", GroupLive.Index, :new
+      live "/groups/:id/edit", GroupLive.Index, :edit
+      live "/groups/:id", GroupLive.Show, :show
+      live "/groups/:id/show/edit", GroupLive.Show, :edit
+
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end

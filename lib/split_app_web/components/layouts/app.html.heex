@@ -1,7 +1,7 @@
 <main class="flex flex-col min-h-screen">
   <nav class="flex w-full justify-between border-b border-gray-100 py-4 px-8">
     <div class="flex justify-between">
-      <.link href={~p"/"} class="text-xl font-semibold text-gray-900">
+      <.link href={~p"/dashboard"} class="text-xl font-semibold text-gray-900">
         spl.it
       </.link>
     </div>
@@ -13,9 +13,6 @@
         <.link href={~p"/users/log_out"} method="delete">
           Log out
         </.link>
-        <div>
-          {@current_user.email}
-        </div>
       <% else %>
         <.link href={~p"/users/register"}>
           Register
@@ -26,6 +23,7 @@
       <% end %>
     </div>
   </nav>
+  <.flash_group flash={@flash} />
   <div class="relative flex flex-grow">
     {@inner_content}
   </div>
