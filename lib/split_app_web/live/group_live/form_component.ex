@@ -50,17 +50,21 @@ defmodule SplitAppWeb.GroupLive.FormComponent do
   end
 
   defp save_group(socket, :edit, group_params) do
-    case Groups.update_group(socket.assigns.group, group_params) do
+    user = socket.assigns.current_user
+
+    case Groups.update_user_group(user, socket.assigns.group, group_params) do
       {:ok, group} ->
         notify_parent({:saved, group})
+        notify_parent({:put_flash, {:info, "Group updated successfully"}})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Group updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
+        {:noreply, push_patch(socket, to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
+
+      {:error, :unauthorized} ->
+        notify_parent({:put_flash, {:error, "You are not authorized to update this group"}})
+        {:noreply, push_patch(socket, to: socket.assigns.patch)}
     end
   end
 
@@ -70,11 +74,9 @@ defmodule SplitAppWeb.GroupLive.FormComponent do
         # Add the current user to the newly created group
         Groups.add_user_to_group(socket.assigns.current_user, group)
         notify_parent({:saved, group})
+        notify_parent({:put_flash, {:info, "Group created successfully"}})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Group created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+        {:noreply, push_patch(socket, to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}

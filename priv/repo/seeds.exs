@@ -14,31 +14,36 @@ alias SplitApp.Accounts
 alias SplitApp.Groups
 
 # Create test users
-{:ok, user1} = Accounts.register_user(%{
-  email: "user1@example.com",
-  password: "password12345"
-})
+{:ok, user1} =
+  Accounts.register_user(%{
+    email: "user1@example.com",
+    password: "password12345"
+  })
 
-{:ok, user2} = Accounts.register_user(%{
-  email: "user2@example.com", 
-  password: "password12345"
-})
+{:ok, user2} =
+  Accounts.register_user(%{
+    email: "user2@example.com",
+    password: "password12345"
+  })
 
 # Create test groups
-{:ok, group1} = Groups.create_group(%{
-  name: "Weekend Trip",
-  description: "Expenses for our weekend getaway"
-})
+{:ok, group1} =
+  Groups.create_group(%{
+    name: "Weekend Trip",
+    description: "Expenses for our weekend getaway"
+  })
 
-{:ok, group2} = Groups.create_group(%{
-  name: "Monthly Groceries",
-  description: "Shared grocery expenses for the apartment"
-})
+{:ok, group2} =
+  Groups.create_group(%{
+    name: "Monthly Groceries",
+    description: "Shared grocery expenses for the apartment"
+  })
 
-{:ok, group3} = Groups.create_group(%{
-  name: "Birthday Party",
-  description: "Planning and expenses for Sarah's birthday"
-})
+{:ok, group3} =
+  Groups.create_group(%{
+    name: "Birthday Party",
+    description: "Planning and expenses for Sarah's birthday"
+  })
 
 # Add users to groups
 Groups.add_user_to_group(user1, group1)

@@ -8,13 +8,13 @@ defmodule SplitAppWeb.GroupLiveTest do
   @update_attrs %{name: "some updated name", description: "some updated description"}
   @invalid_attrs %{name: nil, description: nil}
 
-  defp create_group(_) do
-    group = group_fixture()
+  defp create_group(%{user: user}) do
+    group = group_fixture_with_user(user)
     %{group: group}
   end
 
   describe "Index" do
-    setup [:create_group]
+    setup [:register_and_log_in_user, :create_group]
 
     test "lists all groups", %{conn: conn, group: group} do
       {:ok, _index_live, html} = live(conn, ~p"/groups")
@@ -78,7 +78,7 @@ defmodule SplitAppWeb.GroupLiveTest do
   end
 
   describe "Show" do
-    setup [:create_group]
+    setup [:register_and_log_in_user, :create_group]
 
     test "displays group", %{conn: conn, group: group} do
       {:ok, _show_live, html} = live(conn, ~p"/groups/#{group}")

@@ -6,7 +6,9 @@ defmodule SplitAppWeb.GroupLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :groups, Groups.list_groups())}
+    user = socket.assigns.current_user
+    groups = Groups.list_user_groups(user)
+    {:ok, stream(socket, :groups, groups)}
   end
 
   @impl true
@@ -15,9 +17,11 @@ defmodule SplitAppWeb.GroupLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    user = socket.assigns.current_user
+
     socket
     |> assign(:page_title, "Edit Group")
-    |> assign(:group, Groups.get_group!(id))
+    |> assign(:group, Groups.get_user_group!(user, id))
   end
 
   defp apply_action(socket, :new, _params) do
@@ -37,11 +41,24 @@ defmodule SplitAppWeb.GroupLive.Index do
     {:noreply, stream_insert(socket, :groups, group)}
   end
 
+  def handle_info({SplitAppWeb.GroupLive.FormComponent, {:put_flash, {type, message}}}, socket) do
+    {:noreply, put_flash(socket, type, message)}
+  end
+
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    group = Groups.get_group!(id)
-    {:ok, _} = Groups.delete_group(group)
+    user = socket.assigns.current_user
+    group = Groups.get_user_group!(user, id)
 
-    {:noreply, stream_delete(socket, :groups, group)}
+    case Groups.delete_user_group(user, group) do
+      {:ok, _} ->
+        {:noreply, stream_delete(socket, :groups, group)}
+
+      {:error, :unauthorized} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "You are not authorized to delete this group")
+         |> push_navigate(to: ~p"/groups")}
+    end
   end
 end

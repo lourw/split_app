@@ -9,7 +9,7 @@ defmodule SplitAppWeb.UserForgotPasswordLiveTest do
 
   describe "Forgot password page" do
     test "renders email page", %{conn: conn} do
-      {:ok, lv, html} = live(conn, ~p"/users/reset_password")
+      {:ok, _lv, html} = live(conn, ~p"/users/reset_password")
 
       assert html =~ "Forgot your password?"
     end
@@ -19,7 +19,7 @@ defmodule SplitAppWeb.UserForgotPasswordLiveTest do
         conn
         |> log_in_user(user_fixture())
         |> live(~p"/users/reset_password")
-        |> follow_redirect(conn, ~p"/")
+        |> follow_redirect(conn, ~p"/dashboard")
 
       assert {:ok, _conn} = result
     end

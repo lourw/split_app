@@ -18,4 +18,13 @@ defmodule SplitApp.GroupsFixtures do
 
     group
   end
+
+  @doc """
+  Generate a group and add a user to it.
+  """
+  def group_fixture_with_user(user, attrs \\ %{}) do
+    group = group_fixture(attrs)
+    {:ok, group} = SplitApp.Groups.add_user_to_group(user, group)
+    group
+  end
 end
