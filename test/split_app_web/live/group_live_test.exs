@@ -19,7 +19,7 @@ defmodule SplitAppWeb.GroupLiveTest do
     test "lists all groups", %{conn: conn, group: group} do
       {:ok, _index_live, html} = live(conn, ~p"/groups")
 
-      assert html =~ "Listing Groups"
+      assert html =~ "Your Groups"
       assert html =~ group.name
     end
 
@@ -49,7 +49,7 @@ defmodule SplitAppWeb.GroupLiveTest do
     test "updates group in listing", %{conn: conn, group: group} do
       {:ok, index_live, _html} = live(conn, ~p"/groups")
 
-      assert index_live |> element("#groups-#{group.id} a", "Edit") |> render_click() =~
+      assert index_live |> element("a", "Edit") |> render_click() =~
                "Edit Group"
 
       assert_patch(index_live, ~p"/groups/#{group}/edit")
@@ -72,8 +72,8 @@ defmodule SplitAppWeb.GroupLiveTest do
     test "deletes group in listing", %{conn: conn, group: group} do
       {:ok, index_live, _html} = live(conn, ~p"/groups")
 
-      assert index_live |> element("#groups-#{group.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#groups-#{group.id}")
+      assert index_live |> element("a", "Delete") |> render_click()
+      refute has_element?(index_live, "li", group.name)
     end
   end
 
@@ -83,7 +83,6 @@ defmodule SplitAppWeb.GroupLiveTest do
     test "displays group", %{conn: conn, group: group} do
       {:ok, _show_live, html} = live(conn, ~p"/groups/#{group}")
 
-      assert html =~ "Show Group"
       assert html =~ group.name
     end
 

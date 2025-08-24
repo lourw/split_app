@@ -18,9 +18,8 @@ defmodule SplitApp.ExpensesFixtures do
   end
 
   def expense_fixture(attrs \\ %{}) do
-    attrs
-    |> valid_expense_attributes()
-    |> SplitApp.Expenses.Expense.changeset(%SplitApp.Expenses.Expense{})
+    %SplitApp.Expenses.Expense{}
+    |> SplitApp.Expenses.Expense.changeset(valid_expense_attributes(attrs))
     |> SplitApp.Repo.insert!()
   end
 end

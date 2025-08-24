@@ -1,14 +1,50 @@
-<.header>
-  {@group.name}
-  <:subtitle>This is a group record from your database.</:subtitle>
-  <:actions>
-    <.link patch={~p"/groups/#{@group}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit group</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6">
+    <.back navigate={~p"/groups"}>Back to groups</.back>
+  </div>
 
-<.back navigate={~p"/dashboard"}>Back to groups</.back>
+  <.header class="mb-8">
+    {@group.name}
+    <:subtitle>Group details and members</:subtitle>
+    <:actions>
+      <.link patch={~p"/groups/#{@group}/show/edit"} phx-click={JS.push_focus()}>
+        <.button class="flex items-center gap-2">
+          <.icon name="hero-pencil-square" class="w-4 h-4" /> Edit
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
+
+  <div class="bg-white shadow border border-gray-200 overflow-hidden sm:rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Group Information</h3>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Name</dt>
+        <dd class="text-sm text-gray-900">{@group.name}</dd>
+      </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Description</dt>
+        <dd class="text-sm text-gray-900">
+          {if @group.description && String.length(@group.description) > 0,
+            do: @group.description,
+            else: "No description"}
+        </dd>
+      </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Members</dt>
+        <dd class="text-sm text-gray-900">
+          {get_user_count(@group)} {if get_user_count(@group) == 1, do: "member", else: "members"}
+        </dd>
+      </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Created</dt>
+        <dd class="text-sm text-gray-900">{format_date(@group.inserted_at)}</dd>
+      </div>
+    </dl>
+  </div>
+</div>
 
 <.modal
   :if={@live_action == :edit}

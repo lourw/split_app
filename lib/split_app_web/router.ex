@@ -75,6 +75,12 @@ defmodule SplitAppWeb.Router do
       live "/groups/:id", GroupLive.Show, :show
       live "/groups/:id/show/edit", GroupLive.Show, :edit
 
+      live "/expenses", ExpenseLive.Index, :index
+      live "/expenses/new", ExpenseLive.Index, :new
+      live "/expenses/:id/edit", ExpenseLive.Index, :edit
+      live "/expenses/:id", ExpenseLive.Show, :show
+      live "/expenses/:id/show/edit", ExpenseLive.Show, :edit
+
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
