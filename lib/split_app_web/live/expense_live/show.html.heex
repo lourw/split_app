@@ -44,12 +44,7 @@
   </div>
 </div>
 
-<.modal
-  :if={@live_action == :edit}
-  id="expense-modal"
-  show
-  on_cancel={JS.patch(~p"/expenses/#{@expense}")}
->
+<.modal :if={@live_action == :edit} id="expense-modal" show on_cancel={JS.patch(~p"/expenses")}>
   <.live_component
     module={SplitAppWeb.ExpenseLive.FormComponent}
     id={@expense.id}
