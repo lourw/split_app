@@ -1,6 +1,8 @@
 defmodule SplitAppWeb.GroupLive.Show do
   use SplitAppWeb, :live_view
 
+  import SplitAppWeb.LiveHelpers
+
   alias SplitApp.Groups
 
   @impl true
@@ -39,4 +41,7 @@ defmodule SplitAppWeb.GroupLive.Show do
 
   defp page_title(:show), do: "Show Group"
   defp page_title(:edit), do: "Edit Group"
+
+  defp get_user_count(%{users: users}) when is_list(users), do: length(users)
+  defp get_user_count(_), do: 0
 end

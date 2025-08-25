@@ -1,11 +1,11 @@
 <div class="max-w-7xl mx-auto">
   <.header class="mb-8">
-    Your Groups
-    <:subtitle>Manage your expense sharing groups</:subtitle>
+    Your Expenses
+    <:subtitle>Track and manage your personal expenses</:subtitle>
     <:actions>
-      <.link patch={~p"/groups/new"}>
+      <.link patch={~p"/expenses/new"}>
         <.button class="flex items-center gap-2">
-          <.icon name="hero-plus" class="w-4 h-4" /> New Group
+          <.icon name="hero-plus" class="w-4 h-4" /> New Expense
         </.button>
       </.link>
     </:actions>
@@ -14,41 +14,37 @@
   <div class="bg-white overflow-hidden shadow sm:rounded-md">
     <ul role="list" class="divide-y divide-gray-200">
       <li
-        :for={{_id, group} <- @streams.groups}
+        :for={{_id, expense} <- @streams.expenses}
         class="px-6 py-4 hover:bg-gray-50 cursor-pointer"
-        phx-click={JS.navigate(~p"/groups/#{group}")}
+        phx-click={JS.navigate(~p"/expenses/#{expense}")}
       >
         <div class="flex items-center justify-between">
           <div class="min-w-0 flex-1">
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-900 truncate">
-                {group.name}
+                {expense.title}
               </p>
               <div class="ml-4 flex-shrink-0">
-                <span class="text-sm text-gray-500">
-                  {get_user_count(group)} {if get_user_count(group) == 1,
-                    do: "member",
-                    else: "members"}
+                <span class="text-sm font-medium text-gray-900">
+                  {format_money(expense.amount)}
                 </span>
               </div>
             </div>
             <div class="mt-2 flex items-center justify-between">
               <p class="text-sm text-gray-500 truncate">
-                {if group.description && String.length(group.description) > 0,
-                  do: group.description,
-                  else: "No description"}
+                {expense.description}
               </p>
               <div class="ml-4 flex items-center space-x-4 text-sm text-gray-500">
-                <span>{format_date(group.inserted_at)}</span>
+                <span>{format_date(expense.inserted_at)}</span>
                 <.link
-                  patch={~p"/groups/#{group}/edit"}
+                  patch={~p"/expenses/#{expense}/edit"}
                   class="text-indigo-600 hover:text-indigo-900"
                 >
                   Edit
                 </.link>
                 <.link
-                  phx-click={JS.push("delete", value: %{id: group.id})}
-                  data-confirm="Are you sure you want to delete this group? This will remove all associated data."
+                  phx-click={JS.push("delete", value: %{id: expense.id})}
+                  data-confirm="Are you sure you want to delete this expense?"
                   class="text-red-600 hover:text-red-900"
                 >
                   Delete
@@ -60,13 +56,11 @@
       </li>
     </ul>
 
-    <div :if={@groups_count == 0} class="text-center py-12">
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No groups yet</h3>
-      <p class="text-gray-500 mb-6">
-        Create your first group to start splitting expenses with friends.
-      </p>
-      <.link patch={~p"/groups/new"}>
-        <.button>New Group</.button>
+    <div :if={@expenses_count == 0} class="text-center py-12">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No expenses yet</h3>
+      <p class="text-gray-500 mb-6">Get started by creating your first expense.</p>
+      <.link patch={~p"/expenses/new"}>
+        <.button>New Expense</.button>
       </.link>
     </div>
   </div>
@@ -74,17 +68,16 @@
 
 <.modal
   :if={@live_action in [:new, :edit]}
-  id="group-modal"
+  id="expense-modal"
   show
-  on_cancel={JS.patch(~p"/groups")}
+  on_cancel={JS.patch(~p"/expenses")}
 >
   <.live_component
-    module={SplitAppWeb.GroupLive.FormComponent}
-    id={@group.id || :new}
+    module={SplitAppWeb.ExpenseLive.FormComponent}
+    id={@expense.id || :new}
     title={@page_title}
     action={@live_action}
-    group={@group}
-    patch={~p"/groups"}
-    current_user={@current_user}
+    expense={@expense}
+    patch={~p"/expenses"}
   />
 </.modal>

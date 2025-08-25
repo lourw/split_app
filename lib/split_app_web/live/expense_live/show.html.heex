@@ -1,0 +1,56 @@
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6">
+    <.back navigate={~p"/expenses"}>Back to expenses</.back>
+  </div>
+
+  <.header class="mb-8">
+    {@expense.title}
+    <:subtitle>Expense details</:subtitle>
+    <:actions>
+      <.link patch={~p"/expenses/#{@expense}/show/edit"} phx-click={JS.push_focus()}>
+        <.button class="flex items-center gap-2">
+          <.icon name="hero-pencil-square" class="w-4 h-4" /> Edit
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
+
+  <div class="bg-white shadow border border-gray-200 overflow-hidden sm:rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Expense Information</h3>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Title</dt>
+        <dd class="text-sm text-gray-900">{@expense.title}</dd>
+      </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Description</dt>
+        <dd class="text-sm text-gray-900">
+          {if @expense.description && String.length(@expense.description) > 0,
+            do: @expense.description,
+            else: "No description"}
+        </dd>
+      </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Amount</dt>
+        <dd class="text-lg font-semibold text-gray-900">{format_money(@expense.amount)}</dd>
+      </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Created</dt>
+        <dd class="text-sm text-gray-900">{format_date(@expense.inserted_at)}</dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<.modal :if={@live_action == :edit} id="expense-modal" show on_cancel={JS.patch(~p"/expenses")}>
+  <.live_component
+    module={SplitAppWeb.ExpenseLive.FormComponent}
+    id={@expense.id}
+    title={@page_title}
+    action={@live_action}
+    expense={@expense}
+    patch={~p"/expenses/#{@expense}"}
+  />
+</.modal>

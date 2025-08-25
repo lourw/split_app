@@ -1,6 +1,8 @@
 defmodule SplitAppWeb.GroupLive.Index do
   use SplitAppWeb, :live_view
 
+  import SplitAppWeb.LiveHelpers
+
   alias SplitApp.Groups
   alias SplitApp.Groups.Group
 
@@ -8,7 +10,7 @@ defmodule SplitAppWeb.GroupLive.Index do
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     groups = Groups.list_user_groups(user)
-    {:ok, stream(socket, :groups, groups)}
+    {:ok, socket |> stream(:groups, groups) |> assign(:groups_count, length(groups))}
   end
 
   @impl true
@@ -31,14 +33,22 @@ defmodule SplitAppWeb.GroupLive.Index do
   end
 
   defp apply_action(socket, :index, _params) do
+    user = socket.assigns.current_user
+    groups = Groups.list_user_groups(user)
+
     socket
     |> assign(:page_title, "Listing Groups")
     |> assign(:group, nil)
+    |> stream(:groups, groups, reset: true)
+    |> assign(:groups_count, length(groups))
   end
 
   @impl true
   def handle_info({SplitAppWeb.GroupLive.FormComponent, {:saved, group}}, socket) do
-    {:noreply, stream_insert(socket, :groups, group)}
+    {:noreply,
+     socket
+     |> stream_insert(:groups, group)
+     |> assign(:groups_count, socket.assigns.groups_count + 1)}
   end
 
   def handle_info({SplitAppWeb.GroupLive.FormComponent, {:put_flash, {type, message}}}, socket) do
@@ -52,7 +62,10 @@ defmodule SplitAppWeb.GroupLive.Index do
 
     case Groups.delete_user_group(user, group) do
       {:ok, _} ->
-        {:noreply, stream_delete(socket, :groups, group)}
+        {:noreply,
+         socket
+         |> stream_delete(:groups, group)
+         |> assign(:groups_count, socket.assigns.groups_count - 1)}
 
       {:error, :unauthorized} ->
         {:noreply,
@@ -61,4 +74,7 @@ defmodule SplitAppWeb.GroupLive.Index do
          |> push_navigate(to: ~p"/groups")}
     end
   end
+
+  defp get_user_count(%{users: users}) when is_list(users), do: length(users)
+  defp get_user_count(_), do: 0
 end
