@@ -33,9 +33,14 @@ defmodule SplitAppWeb.GroupLive.Index do
   end
 
   defp apply_action(socket, :index, _params) do
+    user = socket.assigns.current_user
+    groups = Groups.list_user_groups(user)
+
     socket
     |> assign(:page_title, "Listing Groups")
     |> assign(:group, nil)
+    |> stream(:groups, groups, reset: true)
+    |> assign(:groups_count, length(groups))
   end
 
   @impl true

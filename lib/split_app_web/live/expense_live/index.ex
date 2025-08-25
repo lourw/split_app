@@ -33,9 +33,14 @@ defmodule SplitAppWeb.ExpenseLive.Index do
   end
 
   defp apply_action(socket, :index, _params) do
+    current_user = socket.assigns.current_user
+    expenses = if current_user, do: Expenses.list_expenses_by_user(current_user.id), else: []
+
     socket
     |> assign(:page_title, "Listing Expenses")
     |> assign(:expense, nil)
+    |> stream(:expenses, expenses, reset: true)
+    |> assign(:expenses_count, length(expenses))
   end
 
   @impl true
