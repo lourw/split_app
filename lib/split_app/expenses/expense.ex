@@ -22,6 +22,13 @@ defmodule SplitApp.Expenses.Expense do
     |> validate_money(:amount)
   end
 
+  @doc false
+  def changeset(expense, attrs, groups) do
+    expense
+    |> changeset(attrs)
+    |> put_assoc(:groups, groups)
+  end
+
   defp validate_money(changeset, field) do
     validate_change(changeset, field, fn
       _, %Money{amount: amount, currency: currency} when amount > 0 and not is_nil(currency) -> []

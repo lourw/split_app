@@ -3,6 +3,7 @@ defmodule SplitAppWeb.ExpenseLive.FormComponent do
 
   alias SplitApp.Expenses
   alias SplitApp.Expenses.Expense
+  alias SplitApp.Groups
 
   @impl true
   def render(assigns) do
@@ -30,6 +31,13 @@ defmodule SplitAppWeb.ExpenseLive.FormComponent do
           options={[{"USD", "USD"}, {"EUR", "EUR"}, {"GBP", "GBP"}]}
           value="USD"
         />
+        <.input
+          field={@form[:group_ids]}
+          type="select"
+          label="Groups"
+          multiple={true}
+          options={@group_options}
+        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Expense</.button>
         </:actions>
@@ -42,11 +50,33 @@ defmodule SplitAppWeb.ExpenseLive.FormComponent do
   def update(%{expense: expense} = assigns, socket) do
     changeset = prepare_changeset_for_form(expense)
 
+    # Get the current user's groups for the dropdown
+    group_options =
+      if assigns.current_user do
+        Groups.list_user_groups(assigns.current_user)
+        |> Enum.map(fn group -> {group.name, group.id} end)
+      else
+        []
+      end
+
+    # Get current expense groups if editing
+    selected_groups =
+      if expense.id do
+        loaded_expense = Expenses.get_expense_with_associations!(expense.id)
+        Enum.map(loaded_expense.groups, & &1.id)
+      else
+        []
+      end
+
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:group_options, group_options)
+     |> assign(:selected_groups, selected_groups)
      |> assign_new(:form, fn ->
-       to_form(changeset)
+       changeset
+       |> Map.put(:changes, Map.put(changeset.changes, :group_ids, selected_groups))
+       |> to_form()
      end)}
   end
 
@@ -63,7 +93,24 @@ defmodule SplitAppWeb.ExpenseLive.FormComponent do
   end
 
   defp save_expense(socket, :edit, expense_params) do
-    case Expenses.update_expense(socket.assigns.expense, expense_params) do
+    # Extract group_ids and remove from params
+    {group_ids, params_without_groups} = Map.pop(expense_params, "group_ids", [])
+
+    # Convert group_ids to integers
+    group_ids = Enum.map(group_ids || [], &String.to_integer/1)
+
+    result =
+      if group_ids == [] do
+        Expenses.update_expense(socket.assigns.expense, params_without_groups)
+      else
+        Expenses.update_expense_with_groups(
+          socket.assigns.expense,
+          params_without_groups,
+          group_ids
+        )
+      end
+
+    case result do
       {:ok, expense} ->
         notify_parent({:saved, expense})
 
@@ -81,7 +128,20 @@ defmodule SplitAppWeb.ExpenseLive.FormComponent do
     params_with_user =
       Map.put(expense_params, "created_by_id", socket.assigns.expense.created_by_id)
 
-    case Expenses.create_expense(params_with_user) do
+    # Extract group_ids and remove from params
+    {group_ids, params_without_groups} = Map.pop(params_with_user, "group_ids", [])
+
+    # Convert group_ids to integers
+    group_ids = Enum.map(group_ids || [], &String.to_integer/1)
+
+    result =
+      if group_ids == [] do
+        Expenses.create_expense(params_without_groups)
+      else
+        Expenses.create_expense_with_groups(params_without_groups, group_ids)
+      end
+
+    case result do
       {:ok, expense} ->
         notify_parent({:saved, expense})
 

@@ -88,6 +88,44 @@ defmodule SplitApp.Expenses do
   end
 
   @doc """
+  Creates an expense with associated groups.
+
+  ## Examples
+
+      iex> create_expense_with_groups(%{field: value}, [1, 2])
+      {:ok, %Expense{}}
+
+      iex> create_expense_with_groups(%{field: bad_value}, [])
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_expense_with_groups(attrs, group_ids) when is_list(group_ids) do
+    Repo.transaction(fn ->
+      with {:ok, expense} <- create_expense(attrs) do
+        now = DateTime.utc_now() |> DateTime.truncate(:second)
+
+        expense_groups =
+          Enum.map(group_ids, fn group_id ->
+            %{
+              expense_id: expense.id,
+              group_id: group_id,
+              inserted_at: now,
+              updated_at: now
+            }
+          end)
+
+        if expense_groups != [] do
+          {_count, _} = Repo.insert_all("expense_groups", expense_groups)
+        end
+
+        get_expense_with_associations!(expense.id)
+      else
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  @doc """
   Updates a expense.
 
   ## Examples
@@ -102,6 +140,28 @@ defmodule SplitApp.Expenses do
   def update_expense(%Expense{} = expense, attrs) do
     expense
     |> Expense.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates an expense with group associations.
+
+  ## Examples
+
+      iex> update_expense_with_groups(expense, %{field: new_value}, [group1, group2])
+      {:ok, %Expense{}}
+
+      iex> update_expense_with_groups(expense, %{field: bad_value}, [])
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_expense_with_groups(%Expense{} = expense, attrs, group_ids)
+      when is_list(group_ids) do
+    groups = SplitApp.Groups.get_groups_by_ids(group_ids)
+
+    expense
+    |> Repo.preload(:groups)
+    |> Expense.changeset_with_groups(attrs, groups)
     |> Repo.update()
   end
 

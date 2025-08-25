@@ -41,6 +41,23 @@ defmodule SplitApp.Groups do
   def get_group!(id), do: Repo.get!(Group, id)
 
   @doc """
+  Gets multiple groups by their IDs.
+
+  ## Examples
+
+      iex> get_groups_by_ids([1, 2, 3])
+      [%Group{}, %Group{}, ...]
+
+      iex> get_groups_by_ids([])
+      []
+
+  """
+  def get_groups_by_ids(ids) when is_list(ids) do
+    from(g in Group, where: g.id in ^ids)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single group only if the user is a member.
 
   Raises `Ecto.NoResultsError` if the Group does not exist or user is not a member.
