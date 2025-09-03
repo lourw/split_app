@@ -37,10 +37,7 @@
   </div>
 
   <div :if={@groups_count > 0} class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    <div
-      :for={{_id, group} <- @streams.groups}
-      class="group cursor-pointer"
-    >
+    <div :for={{_id, group} <- @streams.groups} class="group cursor-pointer">
       <.link navigate={~p"/groups/#{group}"} class="block">
         <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-6 shadow-sm hover:border-gray-400 hover:shadow-md transition-all">
           <div>
@@ -61,7 +58,9 @@
               <div class="flex items-center text-sm text-gray-500">
                 <.icon name="hero-users" class="w-4 h-4 mr-1" />
                 <span>
-                  {get_user_count(group)} {if get_user_count(group) == 1, do: "member", else: "members"}
+                  {get_user_count(group)} {if get_user_count(group) == 1,
+                    do: "member",
+                    else: "members"}
                 </span>
               </div>
               <div class="text-xs text-gray-400">

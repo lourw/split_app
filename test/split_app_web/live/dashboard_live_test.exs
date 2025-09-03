@@ -56,18 +56,18 @@ defmodule SplitAppWeb.DashboardLiveTest do
 
       # Wait for the update
       :timer.sleep(100)
-      
+
       # Verify we're still on the dashboard (not redirected)
       html = render(live)
       assert html =~ "Welcome"
-      
+
       # Verify expense was created and shows in recent expenses
       assert html =~ "Dashboard Expense"
       assert html =~ "Test expense from dashboard"
-      
+
       # Verify modal is closed
       refute has_element?(live, "#expense-modal")
-      
+
       # Verify flash message
       assert html =~ "Expense created successfully"
     end
@@ -89,7 +89,7 @@ defmodule SplitAppWeb.DashboardLiveTest do
 
       # Verify modal is closed
       refute has_element?(live, "#expense-modal")
-      
+
       # Verify we're still on the dashboard
       assert render(live) =~ "Welcome"
       assert render(live) =~ "Recent Expenses"
@@ -97,17 +97,19 @@ defmodule SplitAppWeb.DashboardLiveTest do
 
     test "displays existing expenses in recent expenses section", %{conn: conn, user: user} do
       # Create some expenses
-      expense1 = expense_fixture(%{
-        created_by_id: user.id,
-        title: "First Expense",
-        description: "First Description"
-      })
-      
-      expense2 = expense_fixture(%{
-        created_by_id: user.id,
-        title: "Second Expense",
-        description: "Second Description"
-      })
+      expense1 =
+        expense_fixture(%{
+          created_by_id: user.id,
+          title: "First Expense",
+          description: "First Description"
+        })
+
+      expense2 =
+        expense_fixture(%{
+          created_by_id: user.id,
+          title: "Second Expense",
+          description: "Second Description"
+        })
 
       {:ok, _live, html} = live(conn, ~p"/dashboard")
 
@@ -185,26 +187,28 @@ defmodule SplitAppWeb.DashboardLiveTest do
 
       # Fill and submit form
       assert live
-             |> form("#group-form", group: %{
-               name: "Dashboard Test Group",
-               description: "Created from dashboard"
-             })
+             |> form("#group-form",
+               group: %{
+                 name: "Dashboard Test Group",
+                 description: "Created from dashboard"
+               }
+             )
              |> render_submit()
 
       # Wait for the update
       :timer.sleep(100)
-      
+
       # Verify we're still on the dashboard (not redirected)
       html = render(live)
       assert html =~ "Welcome"
-      
+
       # Verify group was created and shows in groups section
       assert html =~ "Dashboard Test Group"
       assert html =~ "Created from dashboard"
-      
+
       # Verify modal is closed
       refute has_element?(live, "#group-modal")
-      
+
       # Verify flash message
       assert html =~ "Group created successfully"
     end
@@ -225,7 +229,7 @@ defmodule SplitAppWeb.DashboardLiveTest do
 
       # Verify modal is closed
       refute has_element?(live, "#group-modal")
-      
+
       # Verify we're still on the dashboard
       assert render(live) =~ "Welcome"
       assert render(live) =~ "Your Groups"

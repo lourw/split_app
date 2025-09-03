@@ -49,7 +49,7 @@ defmodule SplitAppWeb.GroupLiveTest do
     test "updates group in listing", %{conn: conn, group: group} do
       {:ok, index_live, _html} = live(conn, ~p"/groups")
 
-      assert index_live |> element("a", "Edit") |> render_click() =~
+      assert index_live |> element("a[phx-click='edit_group']") |> render_click() =~
                "Edit Group"
 
       assert_patch(index_live, ~p"/groups/#{group}/edit")
@@ -72,8 +72,8 @@ defmodule SplitAppWeb.GroupLiveTest do
     test "deletes group in listing", %{conn: conn, group: group} do
       {:ok, index_live, _html} = live(conn, ~p"/groups")
 
-      assert index_live |> element("a", "Delete") |> render_click()
-      refute has_element?(index_live, "li", group.name)
+      assert index_live |> element("button[phx-click='delete']") |> render_click()
+      refute has_element?(index_live, "div", group.name)
     end
   end
 
