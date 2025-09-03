@@ -56,6 +56,11 @@ defmodule SplitAppWeb.GroupLive.Index do
   end
 
   @impl true
+  def handle_event("edit_group", %{"id" => id}, socket) do
+    {:noreply, push_patch(socket, to: ~p"/groups/#{id}/edit")}
+  end
+
+  @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     user = socket.assigns.current_user
     group = Groups.get_user_group!(user, id)

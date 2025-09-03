@@ -1,48 +1,170 @@
-<div class="max-w-4xl mx-auto">
+<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
   <div class="mb-6">
-    <.back navigate={~p"/groups"}>Back to groups</.back>
+    <.link
+      navigate={~p"/groups"}
+      class="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-700 flex items-center gap-2"
+    >
+      <.icon name="hero-arrow-left" class="h-4 w-4" />
+      Back to groups
+    </.link>
   </div>
 
-  <.header class="mb-8">
-    {@group.name}
-    <:subtitle>Group details and members</:subtitle>
-    <:actions>
-      <.link patch={~p"/groups/#{@group}/show/edit"} phx-click={JS.push_focus()}>
-        <.button class="flex items-center gap-2">
-          <.icon name="hero-pencil-square" class="w-4 h-4" /> Edit
-        </.button>
-      </.link>
-    </:actions>
-  </.header>
-
-  <div class="bg-white shadow border border-gray-200 overflow-hidden sm:rounded-lg">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900">Group Information</h3>
+  <div class="mb-8">
+    <div class="flex items-start justify-between">
+      <div class="flex items-center space-x-4">
+        <span class="inline-flex rounded-lg bg-indigo-100 p-3 text-indigo-700">
+          <.icon name="hero-user-group" class="h-8 w-8" />
+        </span>
+        <div>
+          <h1 class="text-3xl font-bold leading-tight text-gray-900">{@group.name}</h1>
+          <p class="mt-1 text-lg text-gray-600">
+            {if @group.description && String.length(@group.description) > 0,
+              do: @group.description,
+              else: "No description provided"}
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <.link patch={~p"/groups/#{@group}/show/edit"} phx-click={JS.push_focus()}>
+          <.button class="flex items-center gap-2">
+            <.icon name="hero-pencil-square" class="w-4 h-4" /> Edit Group
+          </.button>
+        </.link>
+      </div>
     </div>
-    <dl class="divide-y divide-gray-200">
-      <div class="px-6 py-4">
-        <dt class="text-sm font-medium text-gray-500 mb-1">Name</dt>
-        <dd class="text-sm text-gray-900">{@group.name}</dd>
+  </div>
+
+  <!-- Group Stats Cards -->
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <.icon name="hero-users" class="w-5 h-5 text-blue-600" />
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Members</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                {get_user_count(@group)}
+              </dd>
+            </dl>
+          </div>
+        </div>
       </div>
-      <div class="px-6 py-4">
-        <dt class="text-sm font-medium text-gray-500 mb-1">Description</dt>
-        <dd class="text-sm text-gray-900">
-          {if @group.description && String.length(@group.description) > 0,
-            do: @group.description,
-            else: "No description"}
-        </dd>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <.icon name="hero-banknotes" class="w-5 h-5 text-green-600" />
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Expenses</dt>
+              <dd class="text-lg font-semibold text-gray-900">$0.00</dd>
+            </dl>
+          </div>
+        </div>
       </div>
-      <div class="px-6 py-4">
-        <dt class="text-sm font-medium text-gray-500 mb-1">Members</dt>
-        <dd class="text-sm text-gray-900">
-          {get_user_count(@group)} {if get_user_count(@group) == 1, do: "member", else: "members"}
-        </dd>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <.icon name="hero-receipt-percent" class="w-5 h-5 text-yellow-600" />
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Your Share</dt>
+              <dd class="text-lg font-semibold text-gray-900">$0.00</dd>
+            </dl>
+          </div>
+        </div>
       </div>
-      <div class="px-6 py-4">
-        <dt class="text-sm font-medium text-gray-500 mb-1">Created</dt>
-        <dd class="text-sm text-gray-900">{format_date(@group.inserted_at)}</dd>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <.icon name="hero-calendar-days" class="w-5 h-5 text-purple-600" />
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Created</dt>
+              <dd class="text-lg font-semibold text-gray-900">{format_date(@group.inserted_at)}</dd>
+            </dl>
+          </div>
+        </div>
       </div>
-    </dl>
+    </div>
+  </div>
+
+  <!-- Members and Activity Sections Side by Side -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Members Section -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-gray-900 flex items-center">
+            <.icon name="hero-users" class="w-5 h-5 mr-2 text-gray-500" />
+            Group Members ({get_user_count(@group)})
+          </h3>
+          <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500 flex items-center">
+            <.icon name="hero-plus" class="w-4 h-4 mr-1" />
+            Invite Members
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div :if={get_user_count(@group) == 0} class="text-center py-6">
+          <div class="mx-auto h-12 w-12 text-gray-400">
+            <.icon name="hero-user-plus" class="w-full h-full" />
+          </div>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">No members yet</h3>
+          <p class="mt-1 text-sm text-gray-500">Invite people to join this group.</p>
+          <div class="mt-4">
+            <button class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+              <.icon name="hero-plus" class="w-4 h-4 mr-1" />
+              Invite Members
+            </button>
+          </div>
+        </div>
+        <div :if={get_user_count(@group) > 0} class="text-center py-4">
+          <p class="text-gray-500">Member management coming soon...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+          <.icon name="hero-clock" class="w-5 h-5 mr-2 text-gray-500" />
+          Recent Activity
+        </h3>
+      </div>
+      <div class="p-6">
+        <div class="text-center py-6">
+          <div class="mx-auto h-12 w-12 text-gray-400">
+            <.icon name="hero-document-text" class="w-full h-full" />
+          </div>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">No activity yet</h3>
+          <p class="mt-1 text-sm text-gray-500">Activity will appear here as members add expenses.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
