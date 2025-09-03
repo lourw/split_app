@@ -12,10 +12,12 @@ defmodule SplitAppWeb.ExpenseLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    expense = Expenses.get_expense_with_associations!(id)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:expense, Expenses.get_expense!(id))}
+     |> assign(:expense, expense)}
   end
 
   defp page_title(:show), do: "Show Expense"

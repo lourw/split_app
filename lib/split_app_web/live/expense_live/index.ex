@@ -44,11 +44,14 @@ defmodule SplitAppWeb.ExpenseLive.Index do
   end
 
   @impl true
-  def handle_info({SplitAppWeb.ExpenseLive.FormComponent, {:saved, expense}}, socket) do
+  def handle_info({SplitAppWeb.ExpenseLive.FormComponent, {:saved, _expense}}, socket) do
+    current_user = socket.assigns.current_user
+    expenses = if current_user, do: Expenses.list_expenses_by_user(current_user.id), else: []
+    
     {:noreply,
      socket
-     |> stream_insert(:expenses, expense)
-     |> assign(:expenses_count, socket.assigns.expenses_count + 1)}
+     |> stream(:expenses, expenses, reset: true)
+     |> assign(:expenses_count, length(expenses))}
   end
 
   @impl true

@@ -40,6 +40,25 @@
         <dt class="text-sm font-medium text-gray-500 mb-1">Created</dt>
         <dd class="text-sm text-gray-900">{format_date(@expense.inserted_at)}</dd>
       </div>
+      <div class="px-6 py-4">
+        <dt class="text-sm font-medium text-gray-500 mb-1">Groups</dt>
+        <dd class="text-sm text-gray-900">
+          <div
+            :if={@expense.groups && length(@expense.groups) > 0}
+            class="flex flex-wrap gap-2 mt-1"
+          >
+            <span
+              :for={group <- @expense.groups}
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+            >
+              {group.name}
+            </span>
+          </div>
+          <span :if={!@expense.groups || length(@expense.groups) == 0} class="text-gray-500">
+            No groups assigned
+          </span>
+        </dd>
+      </div>
     </dl>
   </div>
 </div>
@@ -51,6 +70,7 @@
     title={@page_title}
     action={@live_action}
     expense={@expense}
+    current_user={@current_user}
     patch={~p"/expenses/#{@expense}"}
   />
 </.modal>
