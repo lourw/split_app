@@ -73,7 +73,7 @@ defmodule SplitAppWeb.DashboardLive do
   def handle_info({SplitAppWeb.ExpenseLive.FormComponent, {:saved, _expense}}, socket) do
     user = socket.assigns.current_user
     recent_expenses = Expenses.list_expenses_by_user(user.id) |> Enum.take(5)
-    
+
     {:noreply,
      socket
      |> assign(:recent_expenses, recent_expenses)
@@ -86,7 +86,7 @@ defmodule SplitAppWeb.DashboardLive do
   def handle_info({SplitAppWeb.GroupLive.FormComponent, {:saved, _group}}, socket) do
     user = socket.assigns.current_user
     groups = Groups.list_user_groups(user)
-    
+
     {:noreply,
      socket
      |> assign(:groups, groups)
@@ -331,12 +331,7 @@ defmodule SplitAppWeb.DashboardLive do
       />
     </.modal>
 
-    <.modal
-      :if={@show_group_modal}
-      id="group-modal"
-      show
-      on_cancel={JS.push("close_group_modal")}
-    >
+    <.modal :if={@show_group_modal} id="group-modal" show on_cancel={JS.push("close_group_modal")}>
       <.live_component
         module={SplitAppWeb.GroupLive.FormComponent}
         id={:new}
