@@ -1,6 +1,7 @@
 defmodule SplitAppWeb.DashboardLive do
   use SplitAppWeb, :live_view
   alias SplitApp.Groups
+  alias SplitApp.Groups.Group
   alias SplitApp.Expenses
   alias SplitApp.Expenses.Expense
 
@@ -16,7 +17,9 @@ defmodule SplitAppWeb.DashboardLive do
      |> assign(:recent_expenses, recent_expenses)
      |> assign(:page_title, "Dashboard")
      |> assign(:show_expense_modal, false)
-     |> assign(:expense, nil)}
+     |> assign(:expense, nil)
+     |> assign(:show_group_modal, false)
+     |> assign(:group, nil)}
   end
 
   @impl true
@@ -33,11 +36,37 @@ defmodule SplitAppWeb.DashboardLive do
   end
 
   @impl true
+  def handle_event("new_group", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_group_modal, true)
+     |> assign(:group, %Group{})}
+  end
+
+  @impl true
   def handle_event("close_modal", _params, socket) do
     {:noreply,
      socket
      |> assign(:show_expense_modal, false)
+     |> assign(:expense, nil)
+     |> assign(:show_group_modal, false)
+     |> assign(:group, nil)}
+  end
+
+  @impl true
+  def handle_event("close_expense_modal", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_expense_modal, false)
      |> assign(:expense, nil)}
+  end
+
+  @impl true
+  def handle_event("close_group_modal", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_group_modal, false)
+     |> assign(:group, nil)}
   end
 
   @impl true
@@ -51,6 +80,23 @@ defmodule SplitAppWeb.DashboardLive do
      |> assign(:show_expense_modal, false)
      |> assign(:expense, nil)
      |> put_flash(:info, "Expense created successfully")}
+  end
+
+  @impl true
+  def handle_info({SplitAppWeb.GroupLive.FormComponent, {:saved, _group}}, socket) do
+    user = socket.assigns.current_user
+    groups = Groups.list_user_groups(user)
+    
+    {:noreply,
+     socket
+     |> assign(:groups, groups)
+     |> assign(:show_group_modal, false)
+     |> assign(:group, nil)}
+  end
+
+  @impl true
+  def handle_info({SplitAppWeb.GroupLive.FormComponent, {:put_flash, {type, message}}}, socket) do
+    {:noreply, put_flash(socket, type, message)}
   end
 
   @impl true
@@ -88,7 +134,7 @@ defmodule SplitAppWeb.DashboardLive do
           </div>
         </button>
 
-        <.link navigate={~p"/groups/new"} class="group">
+        <button phx-click="new_group" class="group text-left">
           <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 transition-colors">
             <div class="mx-auto h-12 w-12 text-gray-400 group-hover:text-gray-500">
               <svg
@@ -108,7 +154,7 @@ defmodule SplitAppWeb.DashboardLive do
             <h3 class="mt-2 text-lg font-semibold text-gray-900">Create New Group</h3>
             <p class="mt-1 text-sm text-gray-500">Start a new group to organize shared expenses</p>
           </div>
-        </.link>
+        </button>
       </div>
       
     <!-- Recent Expenses -->
@@ -272,7 +318,7 @@ defmodule SplitAppWeb.DashboardLive do
       :if={@show_expense_modal}
       id="expense-modal"
       show
-      on_cancel={JS.push("close_modal")}
+      on_cancel={JS.push("close_expense_modal")}
     >
       <.live_component
         module={SplitAppWeb.ExpenseLive.FormComponent}
@@ -280,6 +326,23 @@ defmodule SplitAppWeb.DashboardLive do
         title="New Expense"
         action={:new}
         expense={@expense}
+        current_user={@current_user}
+        patch={~p"/dashboard"}
+      />
+    </.modal>
+
+    <.modal
+      :if={@show_group_modal}
+      id="group-modal"
+      show
+      on_cancel={JS.push("close_group_modal")}
+    >
+      <.live_component
+        module={SplitAppWeb.GroupLive.FormComponent}
+        id={:new}
+        title="New Group"
+        action={:new}
+        group={@group}
         current_user={@current_user}
         patch={~p"/dashboard"}
       />

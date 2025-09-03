@@ -84,8 +84,8 @@ defmodule SplitAppWeb.DashboardLiveTest do
       assert has_element?(live, "#expense-modal")
 
       # Close modal by triggering the JS command (simulating the X button click)
-      # The modal's on_cancel triggers JS.push("close_modal")
-      assert live |> render_click("close_modal", %{})
+      # The modal's on_cancel triggers JS.push("close_expense_modal")
+      assert live |> render_click("close_expense_modal", %{})
 
       # Verify modal is closed
       refute has_element?(live, "#expense-modal")
@@ -157,6 +157,92 @@ defmodule SplitAppWeb.DashboardLiveTest do
       html = render(live)
       assert html =~ group.name
       assert has_element?(live, "#expense-form select[name='expense[group_ids][]']")
+    end
+
+    test "opens group modal when clicking Create New Group", %{conn: conn} do
+      {:ok, live, _html} = live(conn, ~p"/dashboard")
+
+      # Click the "Create New Group" button
+      assert live
+             |> element("button", "Create New Group")
+             |> render_click()
+
+      # Verify modal is shown
+      assert has_element?(live, "#group-modal")
+      assert render(live) =~ "New Group"
+    end
+
+    test "creates group through modal and updates dashboard", %{conn: conn} do
+      {:ok, live, _html} = live(conn, ~p"/dashboard")
+
+      # Initially no groups
+      assert render(live) =~ "No groups yet"
+
+      # Open modal
+      live
+      |> element("button", "Create New Group")
+      |> render_click()
+
+      # Fill and submit form
+      assert live
+             |> form("#group-form", group: %{
+               name: "Dashboard Test Group",
+               description: "Created from dashboard"
+             })
+             |> render_submit()
+
+      # Wait for the update
+      :timer.sleep(100)
+      
+      # Verify we're still on the dashboard (not redirected)
+      html = render(live)
+      assert html =~ "Welcome"
+      
+      # Verify group was created and shows in groups section
+      assert html =~ "Dashboard Test Group"
+      assert html =~ "Created from dashboard"
+      
+      # Verify modal is closed
+      refute has_element?(live, "#group-modal")
+      
+      # Verify flash message
+      assert html =~ "Group created successfully"
+    end
+
+    test "closes group modal when cancel is clicked and stays on dashboard", %{conn: conn} do
+      {:ok, live, _html} = live(conn, ~p"/dashboard")
+
+      # Open modal
+      live
+      |> element("button", "Create New Group")
+      |> render_click()
+
+      # Verify modal is shown
+      assert has_element?(live, "#group-modal")
+
+      # Close modal by triggering the JS command
+      assert live |> render_click("close_group_modal", %{})
+
+      # Verify modal is closed
+      refute has_element?(live, "#group-modal")
+      
+      # Verify we're still on the dashboard
+      assert render(live) =~ "Welcome"
+      assert render(live) =~ "Your Groups"
+    end
+
+    test "group modal form validation shows errors", %{conn: conn} do
+      {:ok, live, _html} = live(conn, ~p"/dashboard")
+
+      # Open modal
+      live
+      |> element("button", "Create New Group")
+      |> render_click()
+
+      # Submit invalid form
+      assert live
+             |> form("#group-form", group: %{name: nil})
+             |> render_change() =~ "can&#39;t be blank"
     end
   end
 end
